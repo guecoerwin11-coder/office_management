@@ -1,0 +1,103 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Get a free hosted Postgres database in seconds: `npx create-db`
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model Department{
+  id String @id @default(uuid())
+  managerId String  @map("manager_id")
+  name String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  employees Employee[]
+  announcements Annoucement[]
+}
+
+model Employee{
+  id String @id @default(uuid())
+  userId String @map("user_id")
+  fullName String @map("full_name")
+  position String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  departmentId String @map("department_id")
+
+  department Department @relation(fields: [departmentId], references: [id], onDelete: Cascade)
+
+  attendances Attendance[]
+  leaves LeaveRequest[]
+
+  @@unique([userId])
+  @@index([fullName, position])
+
+}
+
+enum AttendanceStatus {
+  PRESENT
+  ABSENT
+  LATE
+}
+
+model Attendance{
+  id String @id @default(uuid())
+  employeeId String @map("employee_id")
+  date DateTime
+  checkIn DateTime  @map("check_in")
+  checkOut DateTime @map("check_out")
+  status AttendanceStatus @default(PRESENT)
+  createdAt DateTime @default(now())
+ 
+  employee Employee @relation(fields: [employeeId], references: [id], onDelete: Cascade)
+
+  @@unique([employeeId, date])
+
+}
+
+enum LeaveType{
+  SICK
+  CASUAL
+  ANNUAL
+}
+
+enum LeaveStatus{
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+model LeaveRequest{
+  id String @id @default(uuid())
+  employeeId String @map("employee_id")
+  type LeaveType
+  startDate DateTime @db.Date @map("start_date")
+  endDate DateTime @db.Date @map("end_date")
+  reason String
+  status LeaveStatus @default(PENDING)
+  reviewBy String @map("review_by")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  employee Employee @relation(fields: [employeeId], references: [id], onDelete: Cascade)
+}
+
+model Annoucement {
+  id String @id @default(uuid())
+  title String
+  body String
+  authorId String 
+  departmentId String @map("department_id")
+  createdAt DateTime @default(now())
+
+  department Department @relation(fields: [departmentId],references: [id], onDelete: Cascade)
+}
