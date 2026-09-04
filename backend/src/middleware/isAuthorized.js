@@ -2,9 +2,9 @@ const Auth = require('../models/authModels')
 
 const authorize = async (req, res, next) => {
     try{
-        const user = await Auth.findOne(req.user.id);
+        const user = await Auth.findById(req.user.id);
 
-    if(!user || !user.role !== 'admin'){
+    if(!user || user.role !== 'admin'){
         return res.status(403).json({
             message: 'only authorize member can access this'
         })

@@ -2,6 +2,7 @@ const Auth = require('../models/authModels')
 const crypto = require('crypto')
 const bcrypt = require("bcryptjs")
 const jwt = require("jsonwebtoken")
+const {passwordResetEmail} = require('../services/passwordEmail')
 
 const token = (user) => {
     return jwt.sign(
@@ -30,7 +31,7 @@ const register = async (req, res) => {
         const hashPass = await bcrypt.hash(password, salt);
 
         const user = await Auth.create({
-            fullName, email, password: hashPass, role
+            fullName, email, password: hashPass, role: role || 'employee'
         })
 
         const jwtToken = token(user);
@@ -77,7 +78,11 @@ const login = async (req, res) => {
 
         res.status(200).json({
             message: 'login success',
-            token: jwtToken
+            token: jwtToken,
+            data: {
+                fulName: user.fullName,
+                role: user.role
+            }
         })
     }catch(err){
         res.status(500).json({
@@ -106,8 +111,9 @@ const forgotPassword = async (req, res) => {
         user.resetExpiry = new Date(Date.now() + 15 * 60 * 1000);
         await user.save()
 
-        const newLink = `${process.env,CLIENT_URL}/reset-password/${newToken}`
+        const newLink = `${process.env.CLIENT_URL}/reset-password/${newToken}`
 
+        await passwordResetEmail(user.email, user.fullName, newLink)
 
         res.status(200).json({
             message: 'check your email sent'
@@ -129,7 +135,7 @@ const resetPassword = async (req, res) => {
             message: 'token and password is required'
         })
 
-        if(newPassword < 6){
+        if(newPassword.length < 6){
             return res.status(400).json({
                 message: 'password too short'
             })
@@ -150,7 +156,7 @@ const resetPassword = async (req, res) => {
         const hashPass = await bcrypt.hash(newPassword, salt);
 
         user.resetPassword = null;
-        user.resetExpiru = null;
+        user.resetExpiry = null;
 
         user.tokenStore = []
         await user.save()

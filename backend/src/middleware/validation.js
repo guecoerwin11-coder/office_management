@@ -5,7 +5,7 @@ const validation = (schema) => (req, res, next) => {
 
         if(!results.success){
             return res.status(400).json({
-                errors: results.flatten().fieldErrors
+                errors: results.error.flatten().fieldErrors
             })
         }
 

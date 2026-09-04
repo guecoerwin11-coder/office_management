@@ -1,7 +1,6 @@
 const express = require('express')
 const authRouter = express.Router()
 const {registerSchema, loginSchema} = require('../schema/authSchema');
-const {passwordResetEmail} = require("../services/passwordEmail")
 const {
     register, login, forgotPassword, resetPassword
 } = require('../controllers/authController')
