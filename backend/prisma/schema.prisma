@@ -54,7 +54,7 @@ model Attendance{
   employeeId String @map("employee_id")
   date DateTime
   checkIn DateTime  @map("check_in")
-  checkOut DateTime @map("check_out")
+  checkOut DateTime? @map("check_out")
   status AttendanceStatus @default(PRESENT)
   createdAt DateTime @default(now())
  
