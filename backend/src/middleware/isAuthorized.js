@@ -1,15 +1,18 @@
 const Auth = require('../models/authModels')
 
-const authorize = async (req, res, next) => {
+const isAuthorized = (allowedRoles = []) => async (req, res, next) => {
     try{
         const user = await Auth.findById(req.user.id);
 
-    if(!user || user.role !== 'admin'){
-        return res.status(403).json({
-            message: 'only authorize member can access this'
-        })
-    }
-    next()
+        if(!user || !allowedRoles.includes(user.role)){
+            return res.status(403).json({
+                message: 'only authorize member can access this'
+            })
+        }
+
+        // avoid re-querying Mongo for the same user later in the controller
+        req.currentUser = user;
+        next()
     }catch(err){
         res.status(500).json({
             message: err.message
@@ -17,4 +20,4 @@ const authorize = async (req, res, next) => {
     }
 }
 
-module.exports = authorize
+module.exports = isAuthorized

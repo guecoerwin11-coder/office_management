@@ -2,7 +2,7 @@ const prisma = require('../configs/postgres')
 const Auth = require('../models/authModels')
 
 
-//   admin/users?="manager"  endpoints
+//   admin/users?role=manager  endpoints
 const getRoles = async (req, res) => {
     try{
 
@@ -14,6 +14,7 @@ const getRoles = async (req, res) => {
 
         res.status(200).json({
             roles: {
+                managerId: users.managerId,
                 fullName: users.fullName,
                 email: users.email,
                 role: users.manageer
