@@ -229,12 +229,8 @@ const deleteLeave = async (req, res) => {
     }
 }
 
-<<<<<<< HEAD
-module.exports = {
-    requestLeave, getRequestLeave, approveLeave,
-    deleteLeave
-}
-=======
+
+
 const getRequestLeave = async (req, res) =>{
     try{
 
@@ -336,4 +332,4 @@ const deleteLeave = async (req, res) => {
 }
 
 module.exports = { requestLeave, getRequestLeave, approveLeave, deleteLeave }
->>>>>>> feature/annoucement-controller
+
