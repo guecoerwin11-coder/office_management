@@ -84,7 +84,7 @@ model LeaveRequest{
   endDate DateTime @db.Date @map("end_date")
   reason String
   status LeaveStatus @default(PENDING)
-  reviewBy String @map("review_by")
+  reviewBy String? @map("review_by")
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
